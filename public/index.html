@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Generator</title>
+</head>
+<body>
+  <h1>Resume Generator</h1>
+  <form id="uploadForm">
+    <label for="pdfFile">Upload LinkedIn PDF:</label>
+    <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" required><br><br>
+
+    <label for="apiKey">OpenAI API Key:</label>
+    <input type="password" id="apiKey" name="apiKey" placeholder="Enter your OpenAI API key" required><br><br>
+
+    <button type="submit">Generate Resume</button>
+  </form>
+
+  <p id="loadingMessage" style="display: none;">Loading...</p>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); 
+
+      const pdfFile = document.getElementById('pdfFile').files[0];
+      const apiKey = document.getElementById('apiKey').value;
+
+      if (!pdfFile || !apiKey) {
+        alert("Please upload a PDF file and enter the API key.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('pdfFile', pdfFile);
+      formData.append('apiKey', apiKey);
+
+
+      document.getElementById('loadingMessage').style.display = 'block';
+
+      try {
+        const response = await fetch('http://localhost:3000/api/generateResume', { // 
+          method: 'POST',
+          body: formData
+        });
+
+        document.getElementById('loadingMessage').style.display = 'none';
+
+        if (!response.ok) {
+          const errorData = await response.json(); 
+          console.error('Error from server:', errorData.message);
+          document.getElementById('result').innerText = 'Error: ' + errorData.message;
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (data.success) {
+          document.getElementById('result').innerHTML = '<h2>Generated Resume:</h2>' + data.htmlContent;
+        } else {
+          document.getElementById('result').innerText = 'Error generating resume: ' + data.message;
+        }
+      } catch (error) {
+        console.error('Error during fetch:', error.message);
+        document.getElementById('result').innerText = 'An error occurred: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
