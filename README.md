@@ -15,7 +15,7 @@ This web application takes a PDF resume downloaded from LinkedIn and converts it
 4. View or copy the generated HTML.
 
 ## Deployment
-The app is deployed on Vercel. You can access it [here](#).
+The app is deployed on Vercel. You can access it [here](https://resume-extractor-from-linkedin-pdf.vercel.app/).
 
 ## Approach
 1. **PDF Parsing**: Used `pdf-parse` to extract text from the PDF.
